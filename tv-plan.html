@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Student Plan Display</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #050510;
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .tv-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(160deg, #0a0a1a 0%, #0d0d2b 30%, #120a2e 60%, #0a0a1a 100%);
+            position: relative;
+        }
+
+        /* Gold shimmer effect */
+        .tv-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at 20% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 50%, rgba(138, 43, 226, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Top Countdown Banner */
+        .top-countdown {
+            background: linear-gradient(90deg, #1a0a2e, #2d1b4e, #1a0a2e);
+            padding: 25px 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            border-bottom: 2px solid;
+            border-image: linear-gradient(90deg, transparent, #d4af37, #f5d060, #d4af37, transparent) 1;
+            box-shadow: 0 8px 40px rgba(212, 175, 55, 0.15);
+            position: relative;
+        }
+
+        .top-countdown::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
+        }
+
+        .countdown-label {
+            font-family: 'Playfair Display', serif;
+            font-size: 2em;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, #d4af37, #f5d060, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+        }
+
+        .countdown-timer {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .countdown-box {
+            background: linear-gradient(145deg, #1a1a3e, #0f0f2a);
+            border: 2px solid #d4af37;
+            border-radius: 20px;
+            padding: 20px 25px;
+            min-width: 110px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2), inset 0 0 20px rgba(212, 175, 55, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.05), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%); }
+            100% { transform: translateX(100%) translateY(100%); }
+        }
+
+        .countdown-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5em;
+            font-weight: 900;
+            background: linear-gradient(180deg, #f5d060, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+            position: relative;
+        }
+
+        .countdown-unit {
+            font-size: 0.85em;
+            color: #a0a0c0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .countdown-sep {
+            font-family: 'Playfair Display', serif;
+            font-size: 4em;
+            font-weight: 900;
+            background: linear-gradient(180deg, #f5d060, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse-gold 1s infinite;
+        }
+
+        @keyframes pulse-gold {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(90deg, #0f0f2a, #1a1a3e, #0f0f2a);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2em;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, #d4af37, #f5d060, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .live-badge {
+            background: linear-gradient(135deg, #8b0000, #dc143c, #8b0000);
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: pulse-live 2s infinite;
+            box-shadow: 0 0 20px rgba(220, 20, 60, 0.4);
+        }
+
+        .live-dot {
+            width: 14px;
+            height: 14px;
+            background: #fff;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes pulse-live {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(220, 20, 60, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(220, 20, 60, 0.6); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            padding: 25px 40px;
+            gap: 35px;
+        }
+
+        /* Left Panel - Schedule */
+        .schedule-panel {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #d4af37;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .panel-title::before {
+            content: '';
+            width: 5px;
+            height: 35px;
+            background: linear-gradient(180deg, #d4af37, #8b6914);
+            border-radius: 3px;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .schedule-table thead {
+            background: linear-gradient(90deg, #1a1a3e, #2a2a5a, #1a1a3e);
+        }
+
+        .schedule-table th {
+            padding: 18px 20px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #d4af37;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .schedule-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.08);
+            font-size: 1em;
+        }
+
+        .schedule-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .schedule-table tbody tr:hover {
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .schedule-table tbody tr.current {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+            border-left: 4px solid #d4af37;
+        }
+
+        .schedule-table tbody tr.completed {
+            opacity: 0.4;
+        }
+
+        .batch-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .batch-1 { background: linear-gradient(135deg, #1e3a5f, #2563eb); color: #fff; box-shadow: 0 0 15px rgba(37, 99, 235, 0.3); }
+        .batch-2 { background: linear-gradient(135deg, #064e3b, #059669); color: #fff; box-shadow: 0 0 15px rgba(5, 150, 105, 0.3); }
+        .batch-3 { background: linear-gradient(135deg, #78350f, #d97706); color: #fff; box-shadow: 0 0 15px rgba(217, 119, 6, 0.3); }
+        .batch-4 { background: linear-gradient(135deg, #7f1d1d, #dc2626); color: #fff; box-shadow: 0 0 15px rgba(220, 38, 38, 0.3); }
+
+        .time-slot {
+            font-weight: 700;
+            color: #f5d060;
+            font-size: 1em;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .duration-badge {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85em;
+            font-variant-numeric: tabular-nums;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .project-num {
+            background: rgba(138, 43, 226, 0.15);
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            color: #c4b5fd;
+            border: 1px solid rgba(138, 43, 226, 0.2);
+        }
+
+        /* Right Panel - Countdown & Current */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Now Showing Card */
+        .now-showing {
+            background: linear-gradient(145deg, #1a1a3e, #0f0f2a);
+            border-radius: 25px;
+            padding: 35px;
+            border: 2px solid rgba(138, 43, 226, 0.3);
+            box-shadow: 0 15px 50px rgba(138, 43, 226, 0.15), inset 0 0 30px rgba(138, 43, 226, 0.05);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .now-showing::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #8b5cf6, transparent);
+        }
+
+        .now-showing h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3em;
+            color: #a78bfa;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+
+        .current-student {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2em;
+            font-weight: 800;
+            background: linear-gradient(90deg, #fff, #e0e0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .current-project {
+            font-size: 1.1em;
+            color: #a78bfa;
+            font-weight: 500;
+        }
+
+        /* Slot Countdown Timer */
+        .slot-countdown-card {
+            background: linear-gradient(145deg, #1a1a3e, #0f0f2a);
+            border-radius: 25px;
+            padding: 35px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 15px 50px rgba(212, 175, 55, 0.1), inset 0 0 30px rgba(212, 175, 55, 0.03);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slot-countdown-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+        }
+
+        .slot-countdown-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3em;
+            color: #d4af37;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 25px;
+        }
+
+        .slot-countdown-display {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .slot-time-box {
+            background: rgba(212, 175, 55, 0.08);
+            border: 2px solid rgba(212, 175, 55, 0.25);
+            border-radius: 18px;
+            padding: 20px 18px;
+            min-width: 95px;
+        }
+
+        .slot-time-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.2em;
+            font-weight: 900;
+            background: linear-gradient(180deg, #f5d060, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+
+        .slot-time-label {
+            font-size: 0.75em;
+            color: #a0a0c0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .slot-countdown-separator {
+            font-family: 'Playfair Display', serif;
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(180deg, #f5d060, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            align-self: center;
+            animation: pulse-gold 1s infinite;
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            margin-top: 25px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            color: #a0a0c0;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #b8860b, #d4af37, #f5d060);
+            border-radius: 10px;
+            transition: width 1s linear;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Batch Timing Card */
+        .batch-timing-card {
+            background: linear-gradient(145deg, #0a2a1a, #0f1f2a);
+            border-radius: 25px;
+            padding: 30px;
+            border: 2px solid rgba(16, 185, 129, 0.25);
+            box-shadow: 0 15px 50px rgba(16, 185, 129, 0.1), inset 0 0 30px rgba(16, 185, 129, 0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .batch-timing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #10b981, transparent);
+        }
+
+        .batch-timing-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2em;
+            color: #34d399;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .batch-timing-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .batch-timing-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px 18px;
+            border-radius: 15px;
+            border-left: 4px solid #10b981;
+            transition: all 0.3s ease;
+        }
+
+        .batch-timing-row.active {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+            border-left-color: #d4af37;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+        }
+
+        .batch-name {
+            font-weight: 700;
+            color: #d1fae5;
+            font-size: 0.95em;
+        }
+
+        .batch-time {
+            font-weight: 700;
+            color: #f5d060;
+            font-size: 0.9em;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .batch-duration {
+            color: #34d399;
+            font-size: 0.85em;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(90deg, #0a0a1a, #1a1a3e, #0a0a1a);
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(212, 175, 55, 0.15);
+        }
+
+        .footer-text {
+            color: #606080;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .clock {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4em;
+            font-weight: 700;
+            background: linear-gradient(90deg, #d4af37, #f5d060);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(212, 175, 55, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+            }
+            .header h1 {
+                font-size: 1.6em;
+            }
+            .countdown-value {
+                font-size: 3em;
+            }
+            .countdown-label {
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tv-container">
+        <!-- Top Countdown Banner -->
+        <div class="top-countdown">
+            <div class="countdown-label">Session Ends In</div>
+            <div class="countdown-timer">
+                <div class="countdown-box">
+                    <div class="countdown-value" id="topHours">03</div>
+                    <div class="countdown-unit">Hours</div>
+                </div>
+                <div class="countdown-sep">:</div>
+                <div class="countdown-box">
+                    <div class="countdown-value" id="topMinutes">00</div>
+                    <div class="countdown-unit">Minutes</div>
+                </div>
+                <div class="countdown-sep">:</div>
+                <div class="countdown-box">
+                    <div class="countdown-value" id="topSeconds">00</div>
+                    <div class="countdown-unit">Seconds</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <h1>Student Project Plan</h1>
+            <div class="live-badge">
+                <div class="live-dot"></div>
+                LIVE
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left: Schedule Table -->
+            <div class="schedule-panel">
+                <div class="panel-title">Today's Schedule (9:00 AM - 12:00 PM)</div>
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>Batch</th>
+                            <th>Time Slot</th>
+                            <th>Duration</th>
+                            <th>Student Name</th>
+                            <th>Project No.</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Right: Countdown & Current Info -->
+            <div class="right-panel">
+                <!-- Now Showing -->
+                <div class="now-showing">
+                    <h2>Now Presenting</h2>
+                    <div class="current-student" id="currentStudent">Loading...</div>
+                    <div class="current-project" id="currentProject">Project #--</div>
+                </div>
+
+                <!-- Slot Countdown Timer -->
+                <div class="slot-countdown-card">
+                    <h2>Current Slot Ends In</h2>
+                    <div class="slot-countdown-display">
+                        <div class="slot-time-box">
+                            <div class="slot-time-value" id="slotHours">00</div>
+                            <div class="slot-time-label">Hours</div>
+                        </div>
+                        <div class="slot-countdown-separator">:</div>
+                        <div class="slot-time-box">
+                            <div class="slot-time-value" id="slotMinutes">00</div>
+                            <div class="slot-time-label">Minutes</div>
+                        </div>
+                        <div class="slot-countdown-separator">:</div>
+                        <div class="slot-time-box">
+                            <div class="slot-time-value" id="slotSeconds">00</div>
+                            <div class="slot-time-label">Seconds</div>
+                        </div>
+                    </div>
+                    <div class="progress-section">
+                        <div class="progress-label">
+                            <span>Slot Progress</span>
+                            <span id="progressText">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Batch Timing Overview -->
+                <div class="batch-timing-card">
+                    <h2>Batch Timing (9AM - 12PM)</h2>
+                    <div class="batch-timing-grid" id="batchTimingGrid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-text">Student Project Presentation System | Batch Schedule 9:00:00 AM - 12:00:00 PM</div>
+            <div class="clock" id="clock">--:--:--</div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION - Edit this data for your plan
+        // ============================================
+        const scheduleData = [
+            { batch: "Batch 1", startTime: "09:00:00", endTime: "09:30:00", student: "Ahmed Khan", project: 1 },
+            { batch: "Batch 1", startTime: "09:30:00", endTime: "10:00:00", student: "Sara Ali", project: 2 },
+            { batch: "Batch 2", startTime: "10:00:00", endTime: "10:30:00", student: "Usman Malik", project: 3 },
+            { batch: "Batch 2", startTime: "10:30:00", endTime: "11:00:00", student: "Fatima Noor", project: 4 },
+            { batch: "Batch 3", startTime: "11:00:00", endTime: "11:30:00", student: "Hassan Raza", project: 5 },
+            { batch: "Batch 3", startTime: "11:30:00", endTime: "12:00:00", student: "Ayesha Siddiqui", project: 6 },
+        ];
+
+        // Session start and end times
+        const SESSION_START = "09:00:00";
+        const SESSION_END = "12:00:00";
+
+        // ============================================
+        // FUNCTIONS
+        // ============================================
+
+        function parseTime(timeStr) {
+            const [hours, minutes, seconds] = timeStr.split(':').map(Number);
+            const now = new Date();
+            now.setHours(hours, minutes, seconds, 0);
+            return now;
+        }
+
+        function formatTime12Hour(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const period = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12;
+            return `${displayHours}:${String(minutes).padStart(2, '0')} ${period}`;
+        }
+
+        function getDuration(startTime, endTime) {
+            const start = parseTime(startTime);
+            const end = parseTime(endTime);
+            const diff = end - start;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+
+        function getCurrentSlot() {
+            const now = new Date();
+            const currentTime = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+            for (let i = 0; i < scheduleData.length; i++) {
+                const slot = scheduleData[i];
+                const start = parseTime(slot.startTime);
+                const end = parseTime(slot.endTime);
+                const startSeconds = start.getHours() * 3600 + start.getMinutes() * 60 + start.getSeconds();
+                const endSeconds = end.getHours() * 3600 + end.getMinutes() * 60 + end.getSeconds();
+
+                if (currentTime >= startSeconds && currentTime < endSeconds) {
+                    return { slot, index: i, endTime: end };
+                }
+            }
+            return null;
+        }
+
+        // ============================================
+        // TOP COUNTDOWN - Session Timer (9AM - 12PM)
+        // ============================================
+        function updateTopCountdown() {
+            const now = new Date();
+            const sessionEnd = parseTime(SESSION_END);
+            const diff = sessionEnd - now;
+
+            if (diff > 0) {
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('topHours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('topMinutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('topSeconds').textContent = String(seconds).padStart(2, '0');
+            } else {
+                document.getElementById('topHours').textContent = "00";
+                document.getElementById('topMinutes').textContent = "00";
+                document.getElementById('topSeconds').textContent = "00";
+            }
+        }
+
+        // ============================================
+        // SLOT COUNTDOWN - Current Slot Timer
+        // ============================================
+        function updateSlotCountdown() {
+            const currentSlot = getCurrentSlot();
+            const now = new Date();
+
+            if (currentSlot) {
+                const endTime = currentSlot.endTime;
+                const diff = endTime - now;
+
+                if (diff > 0) {
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                    document.getElementById('slotHours').textContent = String(hours).padStart(2, '0');
+                    document.getElementById('slotMinutes').textContent = String(minutes).padStart(2, '0');
+                    document.getElementById('slotSeconds').textContent = String(seconds).padStart(2, '0');
+
+                    // Update progress
+                    const start = parseTime(currentSlot.slot.startTime);
+                    const totalDuration = endTime - start;
+                    const elapsed = now - start;
+                    const progress = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
+
+                    document.getElementById('progressFill').style.width = progress + '%';
+                    document.getElementById('progressText').textContent = Math.round(progress) + '%';
+
+                    // Update current student
+                    document.getElementById('currentStudent').textContent = currentSlot.slot.student;
+                    document.getElementById('currentProject').textContent = `Project #${currentSlot.slot.project} | ${currentSlot.slot.batch}`;
+                }
+            } else {
+                const firstSlot = parseTime(scheduleData[0].startTime);
+                const lastSlot = parseTime(scheduleData[scheduleData.length - 1].endTime);
+
+                if (now < firstSlot) {
+                    document.getElementById('currentStudent').textContent = "Starting Soon...";
+                    document.getElementById('currentProject').textContent = "First presentation at " + formatTime12Hour(scheduleData[0].startTime);
+                } else if (now >= lastSlot) {
+                    document.getElementById('currentStudent').textContent = "Session Complete!";
+                    document.getElementById('currentProject').textContent = "All presentations finished for today";
+                }
+
+                document.getElementById('slotHours').textContent = "00";
+                document.getElementById('slotMinutes').textContent = "00";
+                document.getElementById('slotSeconds').textContent = "00";
+                document.getElementById('progressFill').style.width = "100%";
+                document.getElementById('progressText').textContent = "100%";
+            }
+        }
+
+        // ============================================
+        // SCHEDULE TABLE
+        // ============================================
+        function updateScheduleTable() {
+            const tbody = document.getElementById('scheduleBody');
+            const currentSlot = getCurrentSlot();
+            const now = new Date();
+            const currentTime = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+            tbody.innerHTML = scheduleData.map((item, index) => {
+                const start = parseTime(item.startTime);
+                const end = parseTime(item.endTime);
+                const startSeconds = start.getHours() * 3600 + start.getMinutes() * 60 + start.getSeconds();
+                const endSeconds = end.getHours() * 3600 + end.getMinutes() * 60 + end.getSeconds();
+
+                let status = 'Upcoming';
+                let rowClass = '';
+
+                if (currentSlot && currentSlot.index === index) {
+                    status = '🔴 LIVE NOW';
+                    rowClass = 'current';
+                } else if (currentTime >= endSeconds) {
+                    status = '✅ Completed';
+                    rowClass = 'completed';
+                }
+
+                const batchClass = item.batch.toLowerCase().replace(' ', '-');
+                const duration = getDuration(item.startTime, item.endTime);
+
+                return `
+                    <tr class="${rowClass}">
+                        <td><span class="batch-badge ${batchClass}">${item.batch}</span></td>
+                        <td class="time-slot">${formatTime12Hour(item.startTime)} - ${formatTime12Hour(item.endTime)}</td>
+                        <td><span class="duration-badge">${duration}</span></td>
+                        <td><strong>${item.student}</strong></td>
+                        <td><span class="project-num">Project #${item.project}</span></td>
+                        <td>${status}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ============================================
+        // BATCH TIMING GRID
+        // ============================================
+        function updateBatchTiming() {
+            const grid = document.getElementById('batchTimingGrid');
+            const currentSlot = getCurrentSlot();
+
+            // Group by batch
+            const batchGroups = {};
+            scheduleData.forEach((item, index) => {
+                if (!batchGroups[item.batch]) {
+                    batchGroups[item.batch] = { items: [], index: index };
+                }
+                batchGroups[item.batch].items.push(item);
+            });
+
+            let html = '';
+            for (const [batchName, data] of Object.entries(batchGroups)) {
+                const firstItem = data.items[0];
+                const lastItem = data.items[data.items.length - 1];
+                const batchStart = firstItem.startTime;
+                const batchEnd = lastItem.endTime;
+                const duration = getDuration(batchStart, batchEnd);
+
+                const isActive = currentSlot && data.items.some(item => item === currentSlot.slot);
+
+                html += `
+                    <div class="batch-timing-row ${isActive ? 'active' : ''}">
+                        <span class="batch-name">${batchName}</span>
+                        <span class="batch-time">${formatTime12Hour(batchStart)} - ${formatTime12Hour(batchEnd)}</span>
+                        <span class="batch-duration">⏱ ${duration}</span>
+                    </div>
+                `;
+            }
+
+            grid.innerHTML = html;
+        }
+
+        // ============================================
+        // CLOCK
+        // ============================================
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = formatTime(now);
+        }
+
+        // ============================================
+        // INITIALIZE
+        // ============================================
+        function init() {
+            updateTopCountdown();
+            updateSlotCountdown();
+            updateScheduleTable();
+            updateBatchTiming();
+            updateClock();
+
+            // Update every second
+            setInterval(() => {
+                updateTopCountdown();
+                updateSlotCountdown();
+                updateScheduleTable();
+                updateBatchTiming();
+                updateClock();
+            }, 1000);
+        }
+
+        init();
+    </script>
+</body>
+</html>
